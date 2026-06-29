@@ -8,7 +8,6 @@
 		'backoffice/plugincss/responsive.dataTables.min',
 		'backoffice/pages/tables',
 		'/vendors/datepicker/css/bootstrap-datepicker.min',
-
 		'/vendors/bootstrap-switch/css/bootstrap-switch.min',
 		'/vendors/switchery/css/switchery.min',
 		'/vendors/radio_css/css/radiobox.min',
@@ -17,7 +16,7 @@
 	),
 	array('inline' => false)
 );
-
+$is_hotel = ($this->Session->read('Auth.User.Establecimiento.tipo') == 3);
 $regimenes = array(
 	'601 General de Ley Personas Morales' => '601 General de Ley Personas Morales',
 	'603 Personas Morales con Fines no Lucrativos' => '603 Personas Morales con Fines no Lucrativos',
@@ -43,7 +42,6 @@ $regimenes = array(
 	'629 De los Regímenes de Fideicomisos No Empresariales' => '629 De los Regímenes de Fideicomisos No Empresariales',
 	'630 Sociedad por Acciones Simplificada' => '630 Sociedad por Acciones Simplificada'
 );
-
 $usos = array(
 	'G01 Adquisición de mercancías' => 'G01 Adquisición de mercancías',
 	'G02 Devoluciones, descuentos o bonificaciones' => 'G02 Devoluciones, descuentos o bonificaciones',
@@ -71,12 +69,10 @@ $usos = array(
 	'CN01 Nómina' => 'CN01 Nómina',
 	'P01 Por definir' => 'P01 Por definir'
 );
-
 $horas = array();
 for ($i = 0; $i < 24; $i++) {
 	$horas[str_pad($i, 2, '0', STR_PAD_LEFT)] = str_pad($i, 2, '0', STR_PAD_LEFT);
 }
-
 // Arreglo para minutos (00 a 59)
 $minutos = array();
 for ($i = 0; $i < 60; $i++) {
@@ -116,14 +112,20 @@ for ($i = 0; $i < 60; $i++) {
 			<div class="modal-body">
 				<div class="form-group row">
 					<?= $this->Form->input('nombre_evento', array('type' => 'text', 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Nombre de evento', )); ?>
+					<?= $this->Form->input('familia', array('type' => 'text', 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Familia', )); ?>
 					<?= $this->Form->input('fecha_solicitud', array('type' => 'text', 'readonly' => true, 'value' => date("d/M/Y"), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Fecha de Solicitud', )); ?>
 					<?= $this->Form->input('establecimiento', array('type' => 'text', 'readonly' => true, 'value' => $this->Session->read('Auth.User.Establecimiento.nombre'), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Establecimiento', )); ?>
 					<?= $this->Form->input('fecha_servicio', array('type' => 'text', 'class' => 'form-control fecha', 'div' => 'col-md-6', 'required' => true, 'label' => 'Fecha de servicio')) ?>
 					<?= $this->Form->input('hora_servicio', array('type' => 'select', 'options' => $horas, 'class' => 'form-control', 'div' => 'col-md-3', 'required' => true, 'label' => 'Horario de servicio', 'empty' => 'Hora')) ?>
 					<?= $this->Form->input('minuto_servicio', array('type' => 'select', 'options' => $minutos, 'class' => 'form-control', 'div' => 'col-md-3', 'required' => true, 'label' => ' ', 'empty' => 'Minuto')) ?>
 					<?= $this->Form->input('direccion', array('type' => 'text', 'class' => 'form-control', 'div' => 'col-md-12', 'required' => true, 'label' => 'Direccion', )); ?>
-					<?= $this->Form->input('requiere_factura', array('type' => 'select', 'onchange' => 'javascript:showDatosFacturacion(this)', 'options' => array(0 => 'No', 1 => 'Si'), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Requiere Factura', )); ?>
-					<?= $this->Form->input('comprobante', array('type' => 'file', 'class' => 'form-control', 'div' => 'col-md-6', 'label' => 'Comprobante de Pago')); ?>
+					<?php if ($is_hotel): ?>
+						<?= $this->Form->hidden('requiere_factura', array('value' => 0)); ?>
+						<?= $this->Form->input('tipo_comida', array('type' => 'select', 'options' => array('Parve' => 'Parve', 'Lácteo' => 'Lácteo', 'Carne' => 'Carne'), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Tipo de Evento (Parve, Lácteo o Carne)', 'empty' => 'Seleccionar tipo')); ?>
+					<?php else: ?>
+						<?= $this->Form->input('requiere_factura', array('type' => 'select', 'onchange' => 'javascript:showDatosFacturacion(this)', 'options' => array(0 => 'No', 1 => 'Si'), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Requiere Factura', )); ?>
+						<?= $this->Form->input('comprobante', array('type' => 'file', 'class' => 'form-control', 'div' => 'col-md-6', 'label' => 'Comprobante de Pago')); ?>
+					<?php endif; ?>
 				</div>
 				<div class="form-group row" id="datos_factura" style="display: none">
 					<div class="col-sm-12 m-t-15">
@@ -134,7 +136,6 @@ for ($i = 0; $i < 60; $i++) {
 					<?= $this->Form->input('cp', array('type' => 'text', 'class' => 'form-control', 'div' => 'col-md-6', 'label' => 'Código Postal Facturación', )); ?>
 					<?= $this->Form->input('regimen_fiscal', array('type' => 'select', 'options' => $regimenes, 'class' => 'form-control', 'div' => 'col-md-6', 'label' => 'Regimen Fiscal', 'empty' => 'Seleccionar Regimen Fiscal')); ?>
 					<?= $this->Form->input('uso', array('type' => 'select', 'options' => $usos, 'class' => 'form-control', 'div' => 'col-md-6', 'label' => 'Uso de CFDI', 'empty' => 'Seleccionar Uso de CFDI')); ?>
-
 				</div>
 				<div class="form-group row">
 					<div class="col-sm-12 m-t-15">
@@ -145,12 +146,16 @@ for ($i = 0; $i < 60; $i++) {
 							<thead>
 								<tr>
 									<th>Concepto</th>
-									<th>Precio Unitario</th>
-									<th>Cantidad</th>
-									<th>Total</th>
-									<th class="add-row-cell">
-										<button id="addRowBtn" type="button" class="add-btn">➕</button>
-									</th>
+									<?php if ($is_hotel): ?>
+										<th>Cantidad de personas</th>
+									<?php else: ?>
+										<th>Precio Unitario</th>
+										<th>Cantidad</th>
+										<th>Total</th>
+										<th class="add-row-cell">
+											<button id="addRowBtn" type="button" class="add-btn">➕</button>
+										</th>
+									<?php endif; ?>
 								</tr>
 							</thead>
 							<tbody>
@@ -160,29 +165,45 @@ for ($i = 0; $i < 60; $i++) {
 											class="form-control etiqueta-select" onchange="updatePrice(this)" required>
 											<option value="">Seleccionar concepto</option>
 											<?php foreach ($tipos_eventos as $tipo): ?>
-												<option value="<?= $tipo['name'] ?>" data-precio="<?= $tipo['precio'] ?>">
-													<?= $tipo['name'] ?></option>
+												<?php if ($tipo['visibilidad'] == 'ambos' || ($is_hotel && $tipo['visibilidad'] == 'hoteles') || (!$is_hotel && $tipo['visibilidad'] == 'establecimientos')): ?>
+													<option value="<?= $tipo['name'] ?>"
+														data-precio="<?= $is_hotel ? 0 : $tipo['precio'] ?>">
+														<?= $tipo['name'] ?>
+													</option>
+												<?php endif; ?>
 											<?php endforeach; ?>
 										</select>
 									</td>
-									<td><?= $this->Form->input('precio_unitario', array('readonly' => true, 'name' => 'data[Cotizacion][0][precio_unitario]', 'onchange' => 'calculateRowTotal(this)', 'type' => 'number', 'class' => 'form-control price-input', 'div' => false, 'label' => false)) ?>
-									</td>
-									<td><?= $this->Form->input('cantidad', array('name' => 'data[Cotizacion][0][cantidad]', 'onchange' => 'calculateRowTotal(this)', 'type' => 'number', 'class' => 'form-control quantity-input', 'div' => false, 'label' => false)) ?>
-									</td>
-									<td><?= $this->Form->input('total', array('name' => 'data[Cotizacion][0][total]', 'readonly' => true, 'type' => 'number', 'class' => 'form-control total-input', 'div' => false, 'label' => false)) ?>
-									</td>
-									<td>
-										<button type="button" class="remove-btn">❌</button>
-									</td>
+									<?php if ($is_hotel): ?>
+										<td>
+											<?= $this->Form->input('cantidad', array('name' => 'data[Cotizacion][0][cantidad]', 'type' => 'number', 'class' => 'form-control quantity-input', 'div' => false, 'label' => false, 'required' => true)) ?>
+											<input type="hidden" name="data[Cotizacion][0][precio_unitario]"
+												class="price-input" value="0">
+											<input type="hidden" name="data[Cotizacion][0][total]" class="total-input"
+												value="0">
+										</td>
+									<?php else: ?>
+										<td><?= $this->Form->input('precio_unitario', array('readonly' => true, 'name' => 'data[Cotizacion][0][precio_unitario]', 'onchange' => 'calculateRowTotal(this)', 'type' => 'number', 'class' => 'form-control price-input', 'div' => false, 'label' => false)) ?>
+										</td>
+										<td><?= $this->Form->input('cantidad', array('name' => 'data[Cotizacion][0][cantidad]', 'onchange' => 'calculateRowTotal(this)', 'type' => 'number', 'class' => 'form-control quantity-input', 'div' => false, 'label' => false)) ?>
+										</td>
+										<td><?= $this->Form->input('total', array('name' => 'data[Cotizacion][0][total]', 'readonly' => true, 'type' => 'number', 'class' => 'form-control total-input', 'div' => false, 'label' => false)) ?>
+										</td>
+										<td>
+											<button type="button" class="remove-btn">❌</button>
+										</td>
+									<?php endif; ?>
 								</tr>
 							</tbody>
-							<tfoot>
-								<tr>
-									<td colspan="3" style="text-align: right; font-weight: bold;">Total:</td>
-									<td><input type="number" id="subtotal" class="form-control" readonly value="0"></td>
-									<td></td>
-								</tr>
-							</tfoot>
+							<?php if (!$is_hotel): ?>
+								<tfoot>
+									<tr>
+										<td colspan="3" style="text-align: right; font-weight: bold;">Total:</td>
+										<td><input type="number" id="subtotal" class="form-control" readonly value="0"></td>
+										<td></td>
+									</tr>
+								</tfoot>
+							<?php endif; ?>
 						</table>
 					</div>
 				</div>
@@ -198,7 +219,6 @@ for ($i = 0; $i < 60; $i++) {
 		</div>
 	</div>
 </div>
-
 <div class="modal fade" id="viewEtiquetas" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog" style="max-width:900px !important">
 		<div class="modal-content">
@@ -226,9 +246,12 @@ for ($i = 0; $i < 60; $i++) {
 							<tr>
 								<td><b>Nombre de Evento: </b><span id="nombre_evento_view"></span></td>
 								<td><b>Horario de Evento: </b><span id="horario_evento_view"></span></td>
+								<td><b>Familia: </b><span id="familia_view"></span></td>
 							</tr>
 							<tr>
 								<td><b>Dirección de Evento: </b><span id="direccion_evento_view"></span></td>
+								<td id="tipo_comida_container" style="display: none;"><b>Tipo de comida: </b><span
+										id="tipo_comida_view"></span></td>
 							</tr>
 						</table>
 						<table id="quotationTableView_1" style="width: 100%" class="table-striped">
@@ -242,7 +265,6 @@ for ($i = 0; $i < 60; $i++) {
 								</tr>
 							</thead>
 							<tbody>
-
 							</tbody>
 							<tfoot>
 								<tr>
@@ -264,7 +286,6 @@ for ($i = 0; $i < 60; $i++) {
 		</div>
 	</div>
 </div>
-
 <div class="modal fade" id="uploadPago" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog" style="max-width:900px !important">
 		<div class="modal-content">
@@ -298,7 +319,6 @@ for ($i = 0; $i < 60; $i++) {
 								</tr>
 							</thead>
 							<tbody>
-
 							</tbody>
 							<tfoot>
 								<tr>
@@ -322,7 +342,6 @@ for ($i = 0; $i < 60; $i++) {
 		</div>
 	</div>
 </div>
-
 <div class="outer" style="width: 86vw;">
 	<div class="inner bg-container">
 		<div class="row">
@@ -378,9 +397,16 @@ for ($i = 0; $i < 60; $i++) {
 										<td><?= $solicitud['Creado']['nombre'] . " " . $solicitud['Creado']['apellido_paterno'] . " " . $solicitud['Creado']['apellido_materno'] ?>
 										</td>
 										<td style="text-align: center">
-											<?= $solicitud['Servicio']['requiere_factura'] ? "Si" : "No" ?></td>
+											<?= $solicitud['Servicio']['requiere_factura'] ? "Si" : "No" ?>
+										</td>
 										<td style="text-align: center">
-											<?= $solicitud['Servicio']['comprobante'] != "" ? $this->Html->link('<i class="fa fa-eye"></i>', $solicitud['Servicio']['comprobante'], array('escape' => false)) : $this->Html->link('<i class="fa fa-upload"></i>', 'javascript:uploadFile(' . $solicitud['Servicio']['id'] . ',"' . date("ymd", strtotime($solicitud['Servicio']['fecha_solicitud'])) . sprintf($formato, (int) $solicitud['Servicio']['id']) . '")', array('escape' => false)) ?>
+											<?php if ($solicitud['Servicio']['comprobante'] != ""): ?>
+												<?= $this->Html->link('<i class="fa fa-eye"></i>', $solicitud['Servicio']['comprobante'], array('escape' => false)) ?>
+											<?php elseif ($is_hotel): ?>
+												<span>N/A</span>
+											<?php else: ?>
+												<?= $this->Html->link('<i class="fa fa-upload"></i>', 'javascript:uploadFile(' . $solicitud['Servicio']['id'] . ',"' . date("ymd", strtotime($solicitud['Servicio']['fecha_solicitud'])) . sprintf($formato, (int) $solicitud['Servicio']['id']) . '")', array('escape' => false)) ?>
+											<?php endif; ?>
 										</td>
 										<td><?= "$" . number_format($total, 2) ?></td>
 										<td><?= $solicitud['Servicio']['estatus'] ?></td>
@@ -395,14 +421,11 @@ for ($i = 0; $i < 60; $i++) {
 	</div>
 </div>
 <script>
-
 	function formatMyDate(dateString) {
 		// 1. Array de meses abreviados en español
 		const meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 		// 2. Crea un objeto Date a partir del string
 		const fecha = new Date(dateString);
-
 		// 3. Obtiene los componentes de la fecha y hora
 		const dia = fecha.getDate();
 		const mes = meses[fecha.getMonth()]; // Obtiene el mes del array
@@ -410,16 +433,12 @@ for ($i = 0; $i < 60; $i++) {
 		const horas = fecha.getHours();
 		const minutos = fecha.getMinutes();
 		const segundos = fecha.getSeconds();
-
 		// 4. Formatea los números para que tengan 2 dígitos si son menores a 10
 		const formatoDosDigitos = (num) => String(num).padStart(2, '0');
-
 		// 5. Reconstruye el string en el formato deseado
 		const fechaFormateada = `${formatoDosDigitos(dia)}/${mes}/${anio} ${formatoDosDigitos(horas)}:${formatoDosDigitos(minutos)}:${formatoDosDigitos(segundos)}`;
-
 		return fechaFormateada;
 	}
-
 	function viewEtiquetas(id_servicio, folio) {
 		$('#viewEtiquetas').modal('show');
 		document.getElementById('folio_view').innerHTML = folio;
@@ -436,14 +455,24 @@ for ($i = 0; $i < 60; $i++) {
 				document.getElementById('solicitado_view').innerHTML = html.Creado.nombre + " " + html.Creado.apellido_paterno + " " + html.Creado.apellido_materno;
 				document.getElementById('establecimiento_view').innerHTML = html.Establecimiento.nombre;
 				document.getElementById('nombre_evento_view').innerHTML = html.Servicio.nombre_evento;
+				document.getElementById('familia_view').innerHTML = html.Servicio.familia ? html.Servicio.familia : '';
 				document.getElementById('horario_evento_view').innerHTML = formatMyDate(html.Servicio.fecha_servicio);
 				document.getElementById('direccion_evento_view').innerHTML = html.Servicio.direccion;
+				const tipoComidaElem = document.getElementById('tipo_comida_view');
+				const tipoComidaCont = document.getElementById('tipo_comida_container');
+				if (tipoComidaElem && tipoComidaCont) {
+					if (html.Servicio.tipo_comida) {
+						tipoComidaElem.innerHTML = html.Servicio.tipo_comida;
+						tipoComidaCont.style.display = '';
+					} else {
+						tipoComidaCont.style.display = 'none';
+					}
+				}
 				if (html.Servicio.estatus == "Asignado" || html.Servicio.estatus == "Pagado") {
 					document.getElementById('supervisor_evento_view').innerHTML = "Por confirmar";
 				} else {
 					document.getElementById('supervisor_evento_view').innerHTML = html.Supervisor.nombre + " " + html.Supervisor.apellido_paterno + " " + html.Supervisor.apellido_materno;
 				}
-
 				const tableBody = document.querySelector('#quotationTableView_1 tbody');
 				// Limpiar el contenido actual de la tabla para evitar duplicados
 				tableBody.innerHTML = '';
@@ -458,13 +487,10 @@ for ($i = 0; $i < 60; $i++) {
 						// Crear las celdas (td) para cada dato
 						const conceptoCell = document.createElement('td');
 						conceptoCell.textContent = item.concepto;
-
 						const tipoEtiquetaCell = document.createElement('td');
 						tipoEtiquetaCell.textContent = item.tipo_etiqueta;
-
 						const cantidadCell = document.createElement('td');
 						cantidadCell.textContent = item.cantidad;
-
 						const montoCell = document.createElement('td');
 						var montoString = item.monto;
 						var montoNumero = parseFloat(montoString);
@@ -472,7 +498,6 @@ for ($i = 0; $i < 60; $i++) {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
 						});
-
 						const totalCell = document.createElement('td');
 						var totalString = item.total;
 						var totalNumero = parseFloat(totalString);
@@ -481,14 +506,12 @@ for ($i = 0; $i < 60; $i++) {
 							maximumFractionDigits: 2
 						});
 						gran_total += totalNumero;
-
 						// Agregar las celdas a la fila
 						newRow.appendChild(conceptoCell);
 						newRow.appendChild(tipoEtiquetaCell);
 						newRow.appendChild(cantidadCell);
 						newRow.appendChild(montoCell);
 						newRow.appendChild(totalCell);
-
 						// Agregar la fila al cuerpo de la tabla
 						tableBody.appendChild(newRow);
 					});
@@ -509,7 +532,6 @@ for ($i = 0; $i < 60; $i++) {
 			}
 		});
 	}
-
 	function uploadFile(id_servicio, folio) {
 		$('#uploadPago').modal('show');
 		document.getElementById('folio').innerHTML = folio;
@@ -521,7 +543,6 @@ for ($i = 0; $i < 60; $i++) {
 			cache: false,
 			success: function (html) {
 				document.getElementById('ServicioId').value = html.Servicio.id;
-
 				const tableBody = document.querySelector('#quotationTableView tbody');
 				// Limpiar el contenido actual de la tabla para evitar duplicados
 				tableBody.innerHTML = '';
@@ -536,27 +557,21 @@ for ($i = 0; $i < 60; $i++) {
 						// Crear las celdas (td) para cada dato
 						const conceptoCell = document.createElement('td');
 						conceptoCell.textContent = item.concepto;
-
 						const tipoEtiquetaCell = document.createElement('td');
 						tipoEtiquetaCell.textContent = item.tipo_etiqueta;
-
 						const cantidadCell = document.createElement('td');
 						cantidadCell.textContent = item.cantidad;
-
 						const montoCell = document.createElement('td');
 						montoCell.textContent = item.monto;
-
 						const totalCell = document.createElement('td');
 						totalCell.textContent = item.total;
 						gran_total += Number(item.total);
-
 						// Agregar las celdas a la fila
 						newRow.appendChild(conceptoCell);
 						newRow.appendChild(tipoEtiquetaCell);
 						newRow.appendChild(cantidadCell);
 						newRow.appendChild(montoCell);
 						newRow.appendChild(totalCell);
-
 						// Agregar la fila al cuerpo de la tabla
 						tableBody.appendChild(newRow);
 					});
@@ -574,12 +589,10 @@ for ($i = 0; $i < 60; $i++) {
 			}
 		});
 	}
-
 	document.addEventListener('DOMContentLoaded', function () {
 		const quotationTable = document.getElementById('quotationTable');
 		const addRowBtn = document.getElementById('addRowBtn');
 		let rowIndex = document.querySelectorAll('.quotation-row').length - 1;
-
 		// Función para actualizar el precio
 		window.updatePrice = function (selectElement) {
 			const selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -587,14 +600,11 @@ for ($i = 0; $i < 60; $i++) {
 			const row = selectElement.closest('tr');
 			const priceInput = row.querySelector('.price-input');
 			priceInput.value = price;
-
 			// Recalcula el total de la fila después de actualizar el precio
 			calculateRowTotal(priceInput);
 		};
-
 		// ... El resto de tus funciones JavaScript (`updateRowNames`, `calculateRowTotal`, etc.)
 		//     se mantienen igual. Simplemente añade la función `updatePrice` a tu script.
-
 		// Función para actualizar los nombres de los campos de la nueva fila
 		function updateRowNames(newRow) {
 			newRow.querySelectorAll('[name]').forEach(input => {
@@ -604,7 +614,6 @@ for ($i = 0; $i < 60; $i++) {
 			});
 			newRow.setAttribute('data-index', rowIndex);
 		}
-
 		// Función para calcular el total de una fila y el total general
 		window.calculateRowTotal = function (element) {
 			const row = element.closest('tr');
@@ -615,7 +624,6 @@ for ($i = 0; $i < 60; $i++) {
 			totalCell.value = rowTotal.toFixed(2);
 			updateGlobalTotals();
 		};
-
 		// Función para actualizar los totales del footer
 		function updateGlobalTotals() {
 			let subtotal = 0;
@@ -624,12 +632,13 @@ for ($i = 0; $i < 60; $i++) {
 			});
 			const iva = subtotal * 0.16;
 			const finalTotal = subtotal + iva;
-
-			document.getElementById('subtotal').value = subtotal.toFixed(2);
-			document.getElementById('iva').value = iva.toFixed(2);
-			document.getElementById('finalTotal').value = finalTotal.toFixed(2);
+			const subtotalElem = document.getElementById('subtotal');
+			if (subtotalElem) subtotalElem.value = subtotal.toFixed(2);
+			const ivaElem = document.getElementById('iva');
+			if (ivaElem) ivaElem.value = iva.toFixed(2);
+			const finalTotalElem = document.getElementById('finalTotal');
+			if (finalTotalElem) finalTotalElem.value = finalTotal.toFixed(2);
 		}
-
 		// Delegación de eventos para los botones de remover
 		quotationTable.addEventListener('click', function (event) {
 			if (event.target.classList.contains('remove-btn')) {
@@ -640,46 +649,42 @@ for ($i = 0; $i < 60; $i++) {
 				}
 			}
 		});
-
 		// Evento para el botón de agregar fila
-		addRowBtn.addEventListener('click', function () {
-			const tbody = quotationTable.querySelector('tbody');
-			const firstRow = tbody.querySelector('.quotation-row');
-			if (firstRow) {
-				rowIndex++;
-				const newRow = firstRow.cloneNode(true);
-				updateRowNames(newRow); // Actualiza los nombres de los campos
-				newRow.querySelectorAll('input, select').forEach(input => {
-					if (input.type === 'number') {
-						input.value = '0';
-					}
-					if (input.tagName === 'SELECT') {
-						input.selectedIndex = 0;
-					}
-				});
-				tbody.appendChild(newRow);
-			}
-		});
-
+		if (addRowBtn) {
+			addRowBtn.addEventListener('click', function () {
+				const tbody = quotationTable.querySelector('tbody');
+				const firstRow = tbody.querySelector('.quotation-row');
+				if (firstRow) {
+					rowIndex++;
+					const newRow = firstRow.cloneNode(true);
+					updateRowNames(newRow); // Actualiza los nombres de los campos
+					newRow.querySelectorAll('input, select').forEach(input => {
+						if (input.type === 'number') {
+							input.value = '0';
+						}
+						if (input.tagName === 'SELECT') {
+							input.selectedIndex = 0;
+						}
+					});
+					tbody.appendChild(newRow);
+				}
+			});
+		}
 		// Inicializar los totales al cargar la página
 		updateGlobalTotals();
-
 		// Asegurarse de que el precio se actualice al cargar la página
 		document.querySelectorAll('.etiqueta-select').forEach(select => {
 			updatePrice(select);
 		});
 	});
-
 	function showDatosFacturacion(input) {
 		if (input.value == "Si") {
 			document.getElementById('datos_factura').style.display = '';
 		} else {
 			document.getElementById('datos_factura').style.display = 'none';
-
 		}
 	}
 </script>
-
 <?php
 echo $this->Html->script(
 	array(
@@ -699,7 +704,6 @@ echo $this->Html->script(
 		'/vendors/datatables/js/dataTables.scroller.min',
 		'/vendors/moment/js/moment.min',
 		'/vendors/datepicker/js/bootstrap-datepicker.min',
-
 		'/vendors/bootstrap-switch/js/bootstrap-switch.min',
 		'/vendors/switchery/js/switchery.min',
 		'backoffice/pages/radio_checkbox'
@@ -707,7 +711,6 @@ echo $this->Html->script(
 	array('inline' => false)
 );
 ?>
-
 <script>
 	'use strict';
 	$(document).ready(function () {
@@ -722,20 +725,16 @@ echo $this->Html->script(
 			autoclose: true,
 			orientation: "bottom"
 		});
-
 		$(document).on('click', '.add-row', function (e) {
 			e.preventDefault();
-
 			//Agregar número a contador
 			let contador = document.getElementById('JugadorContador').value;
 			document.getElementById('JugadorContador').value = Number(contador) + 1;
 			// Obtener la fila actual para clonarla
 			let currentRow = $(this).closest('.cuenta-row');
 			let newRow = currentRow.clone();
-
 			// Obtener el índice de la nueva fila
 			let newIndex = $('#cuentas-container .cuenta-row').length;
-
 			// Actualizar los nombres de los campos en la nueva fila
 			newRow.find('input').each(function () {
 				let oldName = $(this).attr('name');
@@ -744,31 +743,24 @@ echo $this->Html->script(
 				// Limpiar los valores de los nuevos campos
 				$(this).val('');
 			});
-
 			// Reemplazar el botón 'agregar' de la fila anterior por un botón 'quitar'
 			let previousAddBtn = currentRow.find('.add-row');
 			if (previousAddBtn.length) {
 				previousAddBtn.removeClass('add-row btn-success').addClass('remove-row btn-danger')
 					.html('<i class="fa fa-minus"></i>');
 			}
-
 			// Agregar la nueva fila al contenedor
 			$('#cuentas-container').append(newRow);
 		});
-
 		// Función para quitar una fila
 		$(document).on('click', '.remove-row', function (e) {
 			e.preventDefault();
-
 			let contador = document.getElementById('JugadorContador').value;
 			document.getElementById('JugadorContador').value = Number(contador) - 1;
-
 			// Obtener la fila a eliminar
 			let rowToRemove = $(this).closest('.cuenta-row');
-
 			// Eliminar la fila
 			rowToRemove.remove();
-
 			// Re-indexar los campos restantes
 			$('#cuentas-container .cuenta-row').each(function (index) {
 				$(this).find('input').each(function () {
@@ -778,7 +770,6 @@ echo $this->Html->script(
 				});
 			});
 		});
-
 	});
 	var TableAdvanced = function () {
 		// ===============table 1====================
@@ -797,7 +788,6 @@ echo $this->Html->script(
 			tableWrapper.find('.dataTables_length select').select2(); // initialize select2 dropdown
 		}
 		// ===============table 1===============
-
 		return {
 			//main function to initiate the module
 			init: function () {
@@ -808,5 +798,4 @@ echo $this->Html->script(
 			}
 		};
 	}();
-
 </script>

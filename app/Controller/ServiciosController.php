@@ -93,14 +93,26 @@ class ServiciosController extends AppController
 	public function addEvento()
 	{
 		if ($this->request->is('post')) {
-			$anexo = $this->request->data['Servicio']['comprobante'];
-			unset($this->request->data['Servicio']['comprobante']);
+			$is_hotel = ($this->Session->read('Auth.User.Establecimiento.tipo') == 3);
+			$anexo = isset($this->request->data['Servicio']['comprobante']) ? $this->request->data['Servicio']['comprobante'] : null;
+			if (isset($this->request->data['Servicio']['comprobante'])) {
+				unset($this->request->data['Servicio']['comprobante']);
+			}
 			$this->request->data['Servicio']['fecha_solicitud'] = date('Y-m-d H:i:s');
 			$this->request->data['Servicio']['establecimiento_id'] = $this->Session->read('Auth.User.establecimiento_id');
 			$this->request->data['Servicio']['user_id'] = $this->Session->read('Auth.User.id');
-			$this->request->data['Servicio']['estatus'] = 'Solicitado Sin Pago';
 			$this->request->data['Servicio']['tipo'] = 0; //0 = Servicio
 			$this->request->data['Servicio']['fecha_servicio'] = $this->request->data['Servicio']['fecha_servicio'] . " " . $this->request->data['Servicio']['hora_servicio'] . ":" . $this->request->data['Servicio']['minuto_servicio'] . ":00";
+
+			if ($is_hotel) {
+				$this->request->data['Servicio']['estatus'] = 'Pagado';
+				if (isset($this->request->data['Cotizacion'][0]['cantidad'])) {
+					$this->request->data['Servicio']['numero_personas'] = $this->request->data['Cotizacion'][0]['cantidad'];
+				}
+			} else {
+				$this->request->data['Servicio']['estatus'] = 'Solicitado Sin Pago';
+			}
+
 			if ($this->Servicio->save($this->request->data)) {
 				$idServicio = $this->Servicio->getInsertID();
 				$this->loadModel('ItemsServicio');
@@ -116,7 +128,7 @@ class ServiciosController extends AppController
 					$this->ItemsServicio->save($item_obj);
 				}
 
-				if ($anexo['error'] == 0) {
+				if (!$is_hotel && $anexo && $anexo['error'] == 0) {
 					$id_unico = uniqid();
 					// Define la carpeta de destino dentro de la carpeta 'webroot'
 					$uploadDir = "/files/servicios";
@@ -137,14 +149,10 @@ class ServiciosController extends AppController
 						);
 						$this->Servicio->create();
 						$this->Servicio->save($servicio);
-						// Aquí puedes guardar el resto de los datos del formulario, incluyendo la ruta del archivo
-						// Ejemplo: $this->ModeloDelArchivo->save($this->request->data);
 						$this->Session->setFlash('Archivo subido y guardado con éxito.');
 					} else {
 						$this->Session->setFlash('Hubo un error al mover el archivo.');
 					}
-				} else {
-					$this->Session->setFlash('No se ha subido ningún archivo o hubo un error.');
 				}
 				$this->Session->setFlash('Solicitud guardada correctamente.', 'default', array('class' => 'success'));
 				return $this->redirect(array('controller' => 'servicios', 'action' => 'eventos'));
@@ -209,54 +217,92 @@ class ServiciosController extends AppController
 		$tipos_eventos = array(
 			0 => array(
 				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS HASTA 150 EN ADELANTE',
-				'precio' => 11600.00
+				'precio' => 11600.00,
+				'visibilidad' => 'ambos'
 			),
 			1 => array(
 				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS HASTA 100 A 150 PERSONAS',
-				'precio' => 9860.00
+				'precio' => 9860.00,
+				'visibilidad' => 'ambos'
 			),
 			2 => array(
 				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS DE 50 A 100 PERSONAS',
-				'precio' => 6960.00
+				'precio' => 6960.00,
+				'visibilidad' => 'ambos'
 			),
 			3 => array(
 				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS DE 0 A 50 PERSONAS',
-				'precio' => 4060.00
+				'precio' => 4060.00,
+				'visibilidad' => 'ambos'
 			),
 			4 => array(
 				'name' => 'CUALQUIER EVENTO DE BANQUETERO HRA EXTRA DESPUÉS DE LAS 8 HRS',
-				'precio' => 600.00
+				'precio' => 600.00,
+				'visibilidad' => 'ambos'
 			),
 			5 => array(
 				'name' => 'EVENTO EN SHABAT PAGO ÚNICO',
-				'precio' => 5000.00
+				'precio' => 5000.00,
+				'visibilidad' => 'ambos'
 			),
 			10 => array(
 				'name' => 'EVENTO HASTA 25 PERSONAS',
-				'precio' => 2800.00
+				'precio' => 2800.00,
+				'visibilidad' => 'establecimientos'
 			),
 			6 => array(
 				'name' => 'HAGALÁ Y TEVILA HASTA 8 HRS',
-				'precio' => 1500.00
+				'precio' => 1500.00,
+				'visibilidad' => 'establecimientos'
 			),
 			9 => array(
 				'name' => 'JUNK BAR CHICO 1 MESA CHICA',
-				'precio' => 2800.00
+				'precio' => 2800.00,
+				'visibilidad' => 'establecimientos'
 			),
 
 			11 => array(
 				'name' => 'JUNK BAR GRANDE',
-				'precio' => 3500.00
+				'precio' => 3500.00,
+				'visibilidad' => 'establecimientos'
 			),
 			8 => array(
 				'name' => 'PRUEBA DE MENÚ',
-				'precio' => 2000.00
+				'precio' => 2000.00,
+				'visibilidad' => 'establecimientos'
 			),
 			7 => array(
 				'name' => 'SUPLENCIAS',
-				'precio' => 2000.00
+				'precio' => 2000.00,
+				'visibilidad' => 'establecimientos'
+			),
+			12 => array(
+				'name' => 'BODA CIVIL',
+				'precio' => 0.00,
+				'visibilidad' => 'hoteles'
+			),
+			13 => array(
+				'name' => 'BODA RELIGIOSA',
+				'precio' => 0.00,
+				'visibilidad' => 'hoteles'
+			),
+			14 => array(
+				'name' => 'BAR MITZVAH',
+				'precio' => 0.00,
+				'visibilidad' => 'hoteles'
+			),
+			15 => array(
+				'name' => 'BRIT MILAH',
+				'precio' => 0.00,
+				'visibilidad' => 'hoteles'
+			),
+			16 => array(
+				'name' => 'TEVILÁ',
+				'precio' => 0.00,
+				'visibilidad' => 'hoteles'
 			),
 		);
+
 
 		$this->set(compact('tipos_eventos'));
 
