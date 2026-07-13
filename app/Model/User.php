@@ -60,6 +60,10 @@ class User extends AppModel {
 		'Establecimiento' => array(
 			'className' => 'Establecimiento',
 			'foreignKey' => 'establecimiento_id'
+		),
+		'Empresa' => array(
+			'className' => 'Empresa',
+			'foreignKey' => 'empresa_id'
 		)
 	);
 
