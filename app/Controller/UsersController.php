@@ -15,12 +15,13 @@ class UsersController extends AppController {
 	public function login() {
 		if ($this->request->is('post')) {
 			if ($this->Auth->login()) {
-				// return $this->redirect($this->Auth->redirect());
-				// $this->redirect('dashboard');
+				$user = $this->Auth->user();
+				if (!empty($user['empresa_id'])) {
+					return $this->redirect(array('controller' => 'portal_empresas', 'action' => 'index'));
+				}
 				return $this->redirect(array('controller' => 'servicios', 'action' => 'etiquetas'));
 			}
-			/*$this->Session->setFlash(__('Invalid username or password, try again'));*/
-			$this->Session->setFlash('Invalid username or password, try again.', 'default', array(), 'm_error'); // Mensaje
+			$this->Session->setFlash('Invalid username or password, try again.', 'default', array(), 'm_error');
 		}
 	}
 

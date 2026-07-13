@@ -20,11 +20,29 @@ class Certificado extends AppModel {
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
-/**
- * belongsTo associations
- *
- * @var array
- */
+	public $belongsTo = array(
+		'Empresa' => array(
+			'className' => 'Empresa',
+			'foreignKey' => 'empresa_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Direccion' => array(
+			'className' => 'Direccion',
+			'foreignKey' => 'direccion_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
+	);
 
 /**
  * hasMany associations
