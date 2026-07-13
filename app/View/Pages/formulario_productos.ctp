@@ -160,7 +160,7 @@ ksort($categorias);
 <section class="u-align-center u-clearfix u-container-align-center u-section-3" id="block-9">
 	<div class="u-clearfix u-sheet u-sheet-1">
 		<div class="form-container">
-			<?= $this->Form->create(null, ['class'=>'responsive-form','url' => "http://localhost/kmd/empresas/getEmpresasProspecto", 'id' => 'form-empresas-prospectos']) ?>
+			<?= $this->Form->create(null, array('class'=>'responsive-form','url' => array('controller'=>'empresas','action'=>'getEmpresasProspecto'), 'id' => 'form-empresas-prospectos')) ?>
 			<div class="form-row">
 				<div class="col mt-2">
 					<h5>Bienvenido al formulario de prospección por favor llena tus datos y un asesor se pondrá en contacto, gracias</h5>
@@ -414,7 +414,7 @@ $this->Html->script(
 
 			// Luego ejecuta la solicitud AJAX
 			$.ajax({
-				url        : 'http://localhost/kmd/empresas/getEmpresasProspecto',
+				url        : '<?php echo $this->Html->url(array('controller' => 'empresas', 'action' => 'getEmpresasProspecto')); ?>',
 				type       : "POST",
 				dataType   : "json",
 				data       : new FormData(this),

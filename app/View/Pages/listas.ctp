@@ -26,7 +26,7 @@ echo $this->Html->script('nicepage');
 						<div class="u-container-layout u-container-layout-2">
 							<h2 class="u-align-center u-text u-text-default u-text-4"> Manual de Pesaj</h2>
 							<img class="u-align-center u-image u-image-default u-preserve-proportions u-image-2" src="<?= $this->Html->url('/img/FOTO-47.-LISTAS-KMD-qtn6hsjtgy3oiju6ydfgysw9mslwkaizyji1q5hgb4.jpg') ?>" alt="" data-image-width="200" data-image-height="200">
-							<a href="<?= $this->Html->url('/files/manual_pesaj_2025_5784.pdf')?>" target="_blank" class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-btn u-button-style u-custom-color-2 u-hover-custom-color-6 u-btn-3">Descargar lista </a>
+							<a href="<?= $this->Html->url('/files/Guia_Pesaj_2026.pdf')?>" target="_blank" class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-btn u-button-style u-custom-color-2 u-hover-custom-color-6 u-btn-3">Descargar lista </a>
 						</div>
 					</div>
 					<div class="u-container-align-center-lg u-container-align-center-md u-container-align-center-sm u-container-align-center-xs u-container-style u-layout-cell u-size-15 u-size-30-md u-layout-cell-3">
@@ -41,7 +41,6 @@ echo $this->Html->script('nicepage');
 							<h2 class="u-align-center u-text u-text-default u-text-6"> Pescados</h2>
 							<img class="u-align-center u-image u-image-default u-preserve-proportions u-image-4" src="<?= $this->Html->url('/img/FOTO-50.-LISTAS-KMD-qtn6hrlza42e6xvk3v0ueb4t1eqjclf9meuk8viuhc.jpg') ?>" alt="" data-image-width="200" data-image-height="200">
 							<a href="<?= $this->Html->url('/files/pescados-kosher.pdf')?>" target="_blank" class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-btn u-button-style u-custom-color-2 u-hover-custom-color-6 u-btn-5">Descargar lista </a>
-							<a href="<?= $this->Html->url('/files/pescados-kosher-tolaim.pdf')?>" target="_blank" class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-btn u-button-style u-custom-color-2 u-hover-custom-color-6 u-btn-5" style="font-size:.7em">Pescados con Tolaim </a>
 						</div>
 					</div>
 				</div>
@@ -61,7 +60,7 @@ echo $this->Html->script('nicepage');
 				<div class="u-border-2 u-border-grey-75 u-border-no-left u-border-no-right u-border-no-top u-container-style u-list-item u-repeater-item">
 					<div class="u-container-layout u-similar-container u-container-layout-5">
 						<a href="<?= $this->Html->url('/files/Lista de Pesaj abrejim 2025.pdf') ?>?>" target="_blank">
-							<p class="u-text u-text-default u-text-8">Lista de productos no comestibles Pesaj 5786-2026 para México&nbsp;<span class="u-file-icon u-icon u-text-custom-color-2 u-icon-1"><img src="<?= $this->Html->url('/img/84251-d259c7c4.png') ?>" alt=""></span>
+							<p class="u-text u-text-default u-text-8">Lista de productos no comestibles Pesaj 5785-2025 para México&nbsp;<span class="u-file-icon u-icon u-text-custom-color-2 u-icon-1"><img src="<?= $this->Html->url('/img/84251-d259c7c4.png') ?>" alt=""></span>
 							</p>
 						</a>
 					</div>
