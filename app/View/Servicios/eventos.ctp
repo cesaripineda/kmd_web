@@ -122,6 +122,27 @@ for ($i = 0; $i < 60; $i++) {
 					<?php if ($is_hotel): ?>
 						<?= $this->Form->hidden('requiere_factura', array('value' => 0)); ?>
 						<?= $this->Form->input('tipo_comida', array('type' => 'select', 'options' => array('Parve' => 'Parve', 'Lácteo' => 'Lácteo', 'Carne' => 'Carne'), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Tipo de Evento (Parve, Lácteo o Carne)', 'empty' => 'Seleccionar tipo')); ?>
+						<?= $this->Form->input('monto_total', array('type' => 'number', 'step' => '0.01', 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Monto Total', 'id' => 'monto_total_input', 'oninput' => 'calculateCommission()')); ?>
+						<?= $this->Form->input('comision_generada', array('type' => 'number', 'step' => '0.01', 'class' => 'form-control', 'div' => 'col-md-6', 'readonly' => true, 'label' => 'Total de Comisión Generada', 'id' => 'comision_generada_input')); ?>
+						<div class="col-md-12 m-t-15" id="desglose_comision_container" style="display: none;">
+							<div class="card card-outline-info" style="border: 1px solid #ccc; padding: 15px; background-color: #f9f9f9; border-radius: 4px; color: black;">
+								<h5 style="margin-top:0;">Desglose de Comisión</h5>
+								<table class="table table-sm" style="margin-bottom:0; width: 100%;">
+									<tr>
+										<td><strong>% de Comisión (12%):</strong></td>
+										<td style="text-align: right;"><span id="desglose_comision_base">$0.00</span></td>
+									</tr>
+									<tr>
+										<td><strong>IVA de la Comisión (16%):</strong></td>
+										<td style="text-align: right;"><span id="desglose_comision_iva">$0.00</span></td>
+									</tr>
+									<tr style="font-size: 1.1em; border-top: 2px solid #ddd;">
+										<td><strong>Total de Comisión Generada:</strong></td>
+										<td style="text-align: right;"><strong><span id="desglose_comision_total">$0.00</span></strong></td>
+									</tr>
+								</table>
+							</div>
+						</div>
 					<?php else: ?>
 						<?= $this->Form->input('requiere_factura', array('type' => 'select', 'onchange' => 'javascript:showDatosFacturacion(this)', 'options' => array(0 => 'No', 1 => 'Si'), 'class' => 'form-control', 'div' => 'col-md-6', 'required' => true, 'label' => 'Requiere Factura', )); ?>
 						<?= $this->Form->input('comprobante', array('type' => 'file', 'class' => 'form-control', 'div' => 'col-md-6', 'label' => 'Comprobante de Pago')); ?>
@@ -252,6 +273,11 @@ for ($i = 0; $i < 60; $i++) {
 								<td><b>Dirección de Evento: </b><span id="direccion_evento_view"></span></td>
 								<td id="tipo_comida_container" style="display: none;"><b>Tipo de comida: </b><span
 										id="tipo_comida_view"></span></td>
+							</tr>
+							<tr id="comisiones_container_view" style="display: none;">
+								<td><b>Monto Total: </b><span id="monto_total_view"></span></td>
+								<td><b>Total Comisión Generada: </b><span id="comision_generada_view"></span></td>
+								<td></td>
 							</tr>
 						</table>
 						<table id="quotationTableView_1" style="width: 100%" class="table-striped">
@@ -468,6 +494,16 @@ for ($i = 0; $i < 60; $i++) {
 						tipoComidaCont.style.display = 'none';
 					}
 				}
+				const comisionesContainer = document.getElementById('comisiones_container_view');
+				if (comisionesContainer) {
+					if (html.Servicio.monto_total) {
+						document.getElementById('monto_total_view').innerHTML = "$" + parseFloat(html.Servicio.monto_total).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+						document.getElementById('comision_generada_view').innerHTML = "$" + parseFloat(html.Servicio.comision_generada).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+						comisionesContainer.style.display = '';
+					} else {
+						comisionesContainer.style.display = 'none';
+					}
+				}
 				if (html.Servicio.estatus == "Asignado" || html.Servicio.estatus == "Pagado") {
 					document.getElementById('supervisor_evento_view').innerHTML = "Por confirmar";
 				} else {
@@ -682,6 +718,30 @@ for ($i = 0; $i < 60; $i++) {
 			document.getElementById('datos_factura').style.display = '';
 		} else {
 			document.getElementById('datos_factura').style.display = 'none';
+		}
+	}
+	function calculateCommission() {
+		var montoTotalInput = document.getElementById('monto_total_input');
+		var comisionGeneradaInput = document.getElementById('comision_generada_input');
+		var desgloseContainer = document.getElementById('desglose_comision_container');
+		if (montoTotalInput) {
+			var montoTotal = parseFloat(montoTotalInput.value) || 0;
+			var baseCommission = montoTotal * 0.12;
+			var iva = baseCommission * 0.16;
+			var totalCommission = baseCommission + iva;
+			
+			if (comisionGeneradaInput) {
+				comisionGeneradaInput.value = totalCommission.toFixed(2);
+			}
+			
+			if (montoTotal > 0) {
+				if (desgloseContainer) desgloseContainer.style.display = '';
+				document.getElementById('desglose_comision_base').innerHTML = "$" + baseCommission.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('desglose_comision_iva').innerHTML = "$" + iva.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('desglose_comision_total').innerHTML = "$" + totalCommission.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+			} else {
+				if (desgloseContainer) desgloseContainer.style.display = 'none';
+			}
 		}
 	}
 </script>

@@ -733,7 +733,7 @@ echo $this->Html->script(
 			// Agregar la nueva fila al contenedor
 			$('#cuentas-container').append(newRow);
 		});
-
+IN (509,514)
 		// Función para quitar una fila
 		$(document).on('click', '.remove-row', function (e) {
 			e.preventDefault();

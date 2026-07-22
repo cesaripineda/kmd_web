@@ -109,6 +109,10 @@ class ServiciosController extends AppController
 				if (isset($this->request->data['Cotizacion'][0]['cantidad'])) {
 					$this->request->data['Servicio']['numero_personas'] = $this->request->data['Cotizacion'][0]['cantidad'];
 				}
+				if (isset($this->request->data['Servicio']['monto_total'])) {
+					$monto_total = floatval($this->request->data['Servicio']['monto_total']);
+					$this->request->data['Servicio']['comision_generada'] = $monto_total * 0.12 * 1.16;
+				}
 			} else {
 				$this->request->data['Servicio']['estatus'] = 'Solicitado Sin Pago';
 			}
