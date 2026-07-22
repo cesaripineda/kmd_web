@@ -7,92 +7,6 @@
 ?>
 <div class="outer" style="width: 86vw;">
     <div class="inner bg-container">
-        <!-- Dashboard de Renovaciones de Materias Primas -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm" style="border-radius: 15px; background: linear-gradient(to right, #ffffff, #f8f9fa);">
-                    <div class="card-header bg-transparent border-0 py-4 px-4 d-flex justify-content-between align-items-center">
-                        <h4 class="m-0" style="font-weight: 800; color: #2c3e50;">
-                            <i class="fa fa-clock-o text-warning mr-2"></i> Dashboard de Renovaciones (MPs)
-                        </h4>
-                        <span class="badge badge-pill badge-warning px-3 py-2" style="font-weight: 700;"><?= count($renovaciones_mps) ?> Pendientes</span>
-                    </div>
-                    <div class="card-body px-4 pb-4">
-                        <?php if (empty($renovaciones_mps)): ?>
-                            <div class="text-center py-5">
-                                <div class="icon-shape bg-soft-success rounded-circle mb-3 mx-auto" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #e8f5e9;">
-                                    <i class="fa fa-check text-success" style="font-size: 40px;"></i>
-                                </div>
-                                <h5 class="font-weight-bold text-success">¡Todo al día!</h5>
-                                <p class="text-muted">No tienes materias primas por vencer en los próximos 30 días.</p>
-                            </div>
-                        <?php else: ?>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="text-muted small text-uppercase font-weight-bold" style="background: #fcfcfc;">
-                                        <tr>
-                                            <th class="border-0">Materia Prima</th>
-                                            <th class="border-0">Expiración Actual</th>
-                                            <th class="border-0">Estatus</th>
-                                            <th class="border-0 text-right">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                        $today_ts = strtotime(date('Y-m-d'));
-                                        foreach ($renovaciones_mps as $rmp): 
-                                            $exp_ts = strtotime($rmp['Mp']['expiracion_certificado']);
-                                            $is_expired = ($exp_ts < $today_ts && $rmp['Mp']['expiracion_certificado'] != '0000-00-00' && !empty($rmp['Mp']['expiracion_certificado']));
-                                            $has_pending = isset($solicitudes_pendientes[$rmp['Mp']['id']]);
-                                        ?>
-                                            <tr style="border-bottom: 1px solid #f8f9fa;">
-                                                <td class="py-3">
-                                                    <div class="font-weight-bold text-dark"><?= h($rmp['Mp']['nombre_ingrediente']) ?></div>
-                                                    <div class="small text-muted"><?= h($rmp['Mp']['marca_comercial']) ?></div>
-                                                </td>
-                                                <td>
-                                                    <span class="<?= $is_expired ? 'text-danger' : 'text-warning' ?> font-weight-bold">
-                                                        <?= !empty($rmp['Mp']['expiracion_certificado']) ? h($rmp['Mp']['expiracion_certificado']) : 'Sin fecha' ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <?php if ($has_pending): ?>
-                                                        <span class="badge badge-info" style="border-radius: 4px; padding: 5px 10px;">EN VALIDACIÓN</span>
-                                                    <?php elseif ($is_expired): ?>
-                                                        <span class="badge badge-danger" style="border-radius: 4px; padding: 5px 10px;">VENCIDO</span>
-                                                    <?php else: ?>
-                                                        <span class="badge badge-warning text-white" style="border-radius: 4px; padding: 5px 10px;">PRÓXIMO A VENCER</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td class="text-right">
-                                                    <?php if (!$has_pending): ?>
-                                                        <button type="button" class="btn btn-sm btn-primary update-btn" 
-                                                                data-id="<?= $rmp['Mp']['id'] ?>" 
-                                                                data-nombre="<?= h($rmp['Mp']['nombre_ingrediente']) ?>"
-                                                                data-clave="<?= h($rmp['Mp']['clave']) ?>"
-                                                                data-marca="<?= h($rmp['Mp']['marca_comercial']) ?>"
-                                                                data-clasificacion="<?= isset($rmp['Mp']['clasificacion']) ? h($rmp['Mp']['clasificacion']) : '' ?>"
-                                                                data-fabricante='<?= isset($rmp['MpFabricante']) ? json_encode($rmp['MpFabricante']) : "[]" ?>'
-                                                                data-kosher="<?= isset($rmp['Mp']['clasificacion_kosher']) ? h($rmp['Mp']['clasificacion_kosher']) : '' ?>"
-                                                                data-proveedor="<?= isset($rmp['Mp']['proveedor']) ? h($rmp['Mp']['proveedor']) : '' ?>"
-                                                                data-notas="<?= h($rmp['Mp']['notas']) ?>"
-                                                                style="border-radius: 8px; font-weight: 700;">
-                                                            <i class="fa fa-upload mr-1"></i> Actualizar
-                                                        </button>
-                                                    <?php else: ?>
-                                                        <button class="btn btn-sm btn-light disabled" style="border-radius: 8px; font-weight: 700;">Pendiente</button>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="row">
             <div class="col-lg-12">
@@ -216,9 +130,9 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
         </div>
+
         <div class="row m-t-40 mb-5">
             <div class="col-lg-3 col-md-6 col-sm-12">
                 <div class="card text-center bg-white p-4 action-card">
@@ -280,6 +194,162 @@
                 </div>
             </div>
         </div>
+
+        <!-- Mis Contactos -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center" style="padding: 20px 25px; border-bottom: 1px solid #f1f1f1;">
+                        <h4 class="card-title m-0 text-primary">
+                            <i class="fa fa-users"></i> Mis Contactos
+                        </h4>
+                        <a href="#" data-toggle="modal" data-target="#contactoModal" id="btn-add-contacto" class="btn btn-primary btn-sm" style="border-radius: 8px; font-weight: 700;">
+                            <i class="fa fa-plus"></i> Agregar Contacto
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="text-muted small text-uppercase font-weight-bold" style="background: #fcfcfc;">
+                                    <tr>
+                                        <th class="border-0 px-4">Nombre</th>
+                                        <th class="border-0">Email</th>
+                                        <th class="border-0">Teléfono</th>
+                                        <th class="border-0">Tipo</th>
+                                        <th class="border-0 text-right px-4">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if(empty($responsables)): ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">No hay contactos registrados.</td>
+                                    </tr>
+                                    <?php else: ?>
+                                    <?php foreach ($responsables as $resp): ?>
+                                        <tr style="border-bottom: 1px solid #f8f9fa;">
+                                            <td class="py-3 px-4">
+                                                <div class="font-weight-bold text-dark">
+                                                    <?= h($resp['Responsable']['nombre'] . " " . $resp['Responsable']['apellido_paterno'] . " " . $resp['Responsable']['apellido_materno']) ?>
+                                                    <?php if(!empty($resp['Responsable']['responsable_kmd'])): ?>
+                                                        <i class="fa fa-star text-warning ml-1" title="Responsable de certificación KMD"></i>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                            <td><?= h($resp['Responsable']['email']) ?></td>
+                                            <td><?= h($resp['Responsable']['telefono']) ?></td>
+                                            <td><?= h($resp['Responsable']['tipo_responsable']) ?></td>
+                                            <td class="text-right px-4">
+                                                <a href="#" data-toggle="modal" data-target="#contactoModal" class="btn btn-sm btn-light btn-edit-contacto" style="border-radius: 6px;"
+                                                   data-id="<?= $resp['Responsable']['id'] ?>"
+                                                   data-nombre="<?= h($resp['Responsable']['nombre']) ?>"
+                                                   data-paterno="<?= h($resp['Responsable']['apellido_paterno']) ?>"
+                                                   data-materno="<?= h($resp['Responsable']['apellido_materno']) ?>"
+                                                   data-email="<?= h($resp['Responsable']['email']) ?>"
+                                                   data-telefono="<?= h($resp['Responsable']['telefono']) ?>"
+                                                   data-fax="<?= h($resp['Responsable']['fax']) ?>"
+                                                   data-celular="<?= h($resp['Responsable']['ceular']) ?>"
+                                                   data-tipo="<?= h($resp['Responsable']['tipo_responsable']) ?>"
+                                                   data-kmd="<?= h($resp['Responsable']['responsable_kmd']) ?>"><i class="fa fa-edit"></i></a>
+                                                <?= $this->Form->postLink('<i class="fa fa-trash text-danger"></i>', array('action'=>'eliminar_responsable', $resp['Responsable']['id']), array('escape'=>false, 'class'=>'btn btn-sm btn-light', 'style'=>'border-radius: 6px;'), '¿Estás seguro de que deseas eliminar este contacto?') ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard de Renovaciones de Materias Primas -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px; background: linear-gradient(to right, #ffffff, #f8f9fa);">
+                    <div class="card-header bg-transparent border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                        <h4 class="m-0" style="font-weight: 800; color: #2c3e50;">
+                            <i class="fa fa-clock-o text-warning mr-2"></i> Dashboard de Renovaciones (MPs)
+                        </h4>
+                        <span class="badge badge-pill badge-warning px-3 py-2" style="font-weight: 700;"><?= count($renovaciones_mps) ?> Pendientes</span>
+                    </div>
+                    <div class="card-body px-4 pb-4">
+                        <?php if (empty($renovaciones_mps)): ?>
+                            <div class="text-center py-5">
+                                <div class="icon-shape bg-soft-success rounded-circle mb-3 mx-auto" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #e8f5e9;">
+                                    <i class="fa fa-check text-success" style="font-size: 40px;"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-success">¡Todo al día!</h5>
+                                <p class="text-muted">No tienes materias primas por vencer en los próximos 30 días.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="text-muted small text-uppercase font-weight-bold" style="background: #fcfcfc;">
+                                        <tr>
+                                            <th class="border-0">Materia Prima</th>
+                                            <th class="border-0">Expiración Actual</th>
+                                            <th class="border-0">Estatus</th>
+                                            <th class="border-0 text-right">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        $today_ts = strtotime(date('Y-m-d'));
+                                        foreach ($renovaciones_mps as $rmp): 
+                                            $exp_ts = strtotime($rmp['Mp']['expiracion_certificado']);
+                                            $is_expired = ($exp_ts < $today_ts && $rmp['Mp']['expiracion_certificado'] != '0000-00-00' && !empty($rmp['Mp']['expiracion_certificado']));
+                                            $has_pending = isset($solicitudes_pendientes[$rmp['Mp']['id']]);
+                                        ?>
+                                            <tr style="border-bottom: 1px solid #f8f9fa;">
+                                                <td class="py-3">
+                                                    <div class="font-weight-bold text-dark"><?= h($rmp['Mp']['nombre_ingrediente']) ?></div>
+                                                    <div class="small text-muted"><?= h($rmp['Mp']['marca_comercial']) ?></div>
+                                                </td>
+                                                <td>
+                                                    <span class="<?= $is_expired ? 'text-danger' : 'text-warning' ?> font-weight-bold">
+                                                        <?= !empty($rmp['Mp']['expiracion_certificado']) ? h($rmp['Mp']['expiracion_certificado']) : 'Sin fecha' ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <?php if ($has_pending): ?>
+                                                        <span class="badge badge-info" style="border-radius: 4px; padding: 5px 10px;">EN VALIDACIÓN</span>
+                                                    <?php elseif ($is_expired): ?>
+                                                        <span class="badge badge-danger" style="border-radius: 4px; padding: 5px 10px;">VENCIDO</span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-warning text-white" style="border-radius: 4px; padding: 5px 10px;">PRÓXIMO A VENCER</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?php if (!$has_pending): ?>
+                                                        <button type="button" class="btn btn-sm btn-primary update-btn" 
+                                                                data-id="<?= $rmp['Mp']['id'] ?>" 
+                                                                data-nombre="<?= h($rmp['Mp']['nombre_ingrediente']) ?>"
+                                                                data-clave="<?= h($rmp['Mp']['clave']) ?>"
+                                                                data-marca="<?= h($rmp['Mp']['marca_comercial']) ?>"
+                                                                data-clasificacion="<?= isset($rmp['Mp']['clasificacion']) ? h($rmp['Mp']['clasificacion']) : '' ?>"
+                                                                data-fabricante='<?= isset($rmp['MpFabricante']) ? json_encode($rmp['MpFabricante']) : "[]" ?>'
+                                                                data-kosher="<?= isset($rmp['Mp']['clasificacion_kosher']) ? h($rmp['Mp']['clasificacion_kosher']) : '' ?>"
+                                                                data-proveedor="<?= isset($rmp['Mp']['proveedor']) ? h($rmp['Mp']['proveedor']) : '' ?>"
+                                                                data-notas="<?= h($rmp['Mp']['notas']) ?>"
+                                                                style="border-radius: 8px; font-weight: 700;">
+                                                            <i class="fa fa-upload mr-1"></i> Actualizar
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <button class="btn btn-sm btn-light disabled" style="border-radius: 8px; font-weight: 700;">Pendiente</button>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -357,6 +427,86 @@
     </div>
 </div>
 
+
+<!-- Modal para Agregar/Editar Contacto -->
+<div class="modal fade" id="contactoModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header bg-primary text-white py-4 px-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title" id="contactoModalLabel" style="font-weight: 800;">
+                    <i class="fa fa-user mr-2"></i> <span id="modalContactoTitle">Agregar Contacto</span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <?= $this->Form->create('Responsable', array('url' => array('controller' => 'portal_empresas', 'action' => 'agregar_responsable'), 'id' => 'formContactoModal')) ?>
+            <div class="modal-body p-4">
+                <?= $this->Form->hidden('id', array('id' => 'modal_contacto_id')) ?>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Nombre *</label>
+                        <?= $this->Form->input('nombre', array('label' => false, 'id' => 'modal_contacto_nombre', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;', 'required' => true)) ?>
+                    </div>
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Apellido Paterno *</label>
+                        <?= $this->Form->input('apellido_paterno', array('label' => false, 'id' => 'modal_contacto_paterno', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;', 'required' => true)) ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Apellido Materno</label>
+                        <?= $this->Form->input('apellido_materno', array('label' => false, 'id' => 'modal_contacto_materno', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;')) ?>
+                    </div>
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Email *</label>
+                        <?= $this->Form->input('email', array('label' => false, 'type' => 'email', 'id' => 'modal_contacto_email', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;', 'required' => true)) ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Teléfono</label>
+                        <?= $this->Form->input('telefono', array('label' => false, 'type' => 'tel', 'id' => 'modal_contacto_telefono', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;')) ?>
+                    </div>
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Celular</label>
+                        <?= $this->Form->input('ceular', array('label' => false, 'type' => 'tel', 'id' => 'modal_contacto_celular', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;')) ?>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Fax</label>
+                        <?= $this->Form->input('fax', array('label' => false, 'id' => 'modal_contacto_fax', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;')) ?>
+                    </div>
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="text-muted text-uppercase small font-weight-bold">Tipo de Responsable</label>
+                        <?= $this->Form->input('tipo_responsable', array('label' => false, 'id' => 'modal_contacto_tipo', 'class' => 'form-control border-light shadow-none bg-light', 'style' => 'border-radius: 10px; height: 45px;')) ?>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12 form-group mt-2" style="padding-left: 20px;">
+                        <label for="modal_contacto_kmd" style="font-weight: 600; cursor: pointer; display: flex; align-items: center; padding-top: 5px;">
+                            <input type="hidden" name="data[Responsable][responsable_kmd]" id="modal_contacto_kmd_" value="0">
+                            <input type="checkbox" name="data[Responsable][responsable_kmd]" value="1" id="modal_contacto_kmd" style="width: 20px; height: 20px; margin: 0 10px 0 0; cursor: pointer;">
+                            Es responsable de certificación KMD
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px; font-weight: 700;">Cancelar</button>
+                <button type="submit" class="btn btn-primary px-5 shadow" style="border-radius: 10px; font-weight: 700;">Guardar</button>
+            </div>
+            <?= $this->Form->end() ?>
+        </div>
+    </div>
+</div>
+
 <?php
 echo $this->Html->script(
 	array(
@@ -373,6 +523,43 @@ $(document).ready(function() {
         todayHighlight: true,
         autoclose: true,
         orientation: "bottom"
+    });
+
+    
+    $('#btn-add-contacto').on('click', function() {
+        $('#modalContactoTitle').text('Agregar Contacto');
+        
+        // Use CakePHP's default url behavior by overriding the action string in JS
+        $('#formContactoModal').attr('action', '<?= $this->Html->url(array("controller" => "portal_empresas", "action" => "agregar_responsable")) ?>');
+        
+        $('#modal_contacto_id').val('');
+        $('#modal_contacto_nombre').val('');
+        $('#modal_contacto_paterno').val('');
+        $('#modal_contacto_materno').val('');
+        $('#modal_contacto_email').val('');
+        $('#modal_contacto_telefono').val('');
+        $('#modal_contacto_fax').val('');
+        $('#modal_contacto_celular').val('');
+        $('#modal_contacto_tipo').val('');
+        $('#modal_contacto_kmd').prop('checked', false);
+    });
+
+    $('.btn-edit-contacto').on('click', function() {
+        $('#modalContactoTitle').text('Editar Contacto');
+        
+        var id = $(this).data('id');
+        $('#formContactoModal').attr('action', '<?= $this->Html->url(array("controller" => "portal_empresas", "action" => "editar_responsable")) ?>/' + id);
+        
+        $('#modal_contacto_id').val(id);
+        $('#modal_contacto_nombre').val($(this).data('nombre'));
+        $('#modal_contacto_paterno').val($(this).data('paterno'));
+        $('#modal_contacto_materno').val($(this).data('materno'));
+        $('#modal_contacto_email').val($(this).data('email'));
+        $('#modal_contacto_telefono').val($(this).data('telefono'));
+        $('#modal_contacto_fax').val($(this).data('fax'));
+        $('#modal_contacto_celular').val($(this).data('celular'));
+        $('#modal_contacto_tipo').val($(this).data('tipo'));
+        $('#modal_contacto_kmd').prop('checked', $(this).data('kmd') == 1);
     });
 
     var fabricanteIndex = 0;
@@ -437,7 +624,7 @@ $(document).ready(function() {
         }
 
         $newItem.find('.cert-file-input').on('change', function() {
-            var fileName = $(this).val().split('\\\\').pop();
+            var fileName = $(this).val().split('\\').pop();
             $(this).next('.custom-file-label').html(fileName || 'Elegir archivo...');
         });
     }
@@ -529,4 +716,3 @@ $(document).ready(function() {
     .border-right { border-right: none; border-bottom: 1px solid #f1f1f1; padding-bottom: 30px; margin-bottom: 30px; }
 }
 </style>
-

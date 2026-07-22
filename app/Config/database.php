@@ -64,17 +64,18 @@
  * flags =>
  * A key/value array of driver specific connection options.
  */
-class DATABASE_CONFIG {
+class DATABASE_CONFIG
+{
 
 	public $default = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
-		'host' => 'localhost',
+		'host' => 'db',
+		'port' => 3306,
 		'login' => 'root',
-		'password' => '',
-		'database' => 'kmd_rollback',
-		'prefix' => '',
-		//'encoding' => 'utf8',
+		'password' => 'kmd_root_password',
+		'database' => 'kmd',
+		'encoding' => 'utf8'
 	);
 
 	public $test = array(

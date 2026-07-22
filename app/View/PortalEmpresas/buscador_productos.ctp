@@ -25,11 +25,11 @@ $certificados_tipos = array(
 
 <style>
     .search-container {
-        background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%);
+        background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
         padding: 40px;
         border-radius: 15px;
         margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(94, 114, 228, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
     }
     .search-input {
         height: 60px;
@@ -47,7 +47,7 @@ $certificados_tipos = array(
         text-transform: uppercase;
         letter-spacing: 1px;
         background: #fff;
-        color: #5e72e4;
+        color: #0056b3;
         border: none;
         transition: all 0.3s;
     }
@@ -64,7 +64,7 @@ $certificados_tipos = array(
     .product-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        border-color: #5e72e4;
+        border-color: #007bff;
     }
     .badge-kosher {
         padding: 6px 12px;
@@ -72,8 +72,8 @@ $certificados_tipos = array(
         font-size: 0.7rem;
         text-transform: uppercase;
         font-weight: 800;
-        background: #eef2ff;
-        color: #4338ca;
+        background: #e9ecef;
+        color: #495057;
     }
 </style>
 
@@ -83,7 +83,7 @@ $certificados_tipos = array(
         <div class="row">
             <div class="col-12">
                 <div class="search-container text-white">
-                    <h2 class="mb-4" style="font-weight: 800;">Buscador Avanzado de Productos</h2>
+                    <h2 class="mb-4" style="font-weight: 800; color: white !important;">Buscador Avanzado de Productos</h2>
                     <p class="opacity-8 mb-4">Realice búsquedas por nombre, marca o categoría dentro de sus certificados vigentes.</p>
                     
                     <?= $this->Form->create(null, array('type' => 'get', 'url' => array('controller' => 'portal_empresas', 'action' => 'buscador_productos'))) ?>
@@ -105,7 +105,7 @@ $certificados_tipos = array(
             <div class="col-12">
                 <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
                     <div class="card-header bg-white py-4 px-4 border-0 d-flex justify-content-between align-items-center">
-                        <h4 class="m-0" style="font-weight: 700; color: #32325d;">Resultados de búsqueda</h4>
+                        <h4 class="m-0" style="font-weight: 700; color: #343a40;">Resultados de búsqueda</h4>
                         <span class="text-muted"><?= count($productos) ?> productos encontrados</span>
                     </div>
                     <div class="card-body p-0">
@@ -126,18 +126,18 @@ $certificados_tipos = array(
                                 <tbody>
                                     <?php foreach ($productos as $producto): ?>
                                         <tr class="product-card" style="background: #ffffff;">
-                                            <td class="px-4" style="color: #67748e; font-size: 0.8rem; font-weight: 600;">
+                                            <td class="px-4" style="color: #6c757d; font-size: 0.8rem; font-weight: 600;">
                                                 <i class="fa fa-building-o mr-1"></i> <?= h($producto['Empresa']['razon_social']) ?>
                                             </td>
-                                            <td style="font-weight: 700; color: #525f7f;"><?= h($producto['Producto']['marca']) ?></td>
-                                            <td style="font-weight: 800; color: #32325d;"><?= h($producto['Producto']['nombre_producto']) ?></td>
-                                            <td><code style="color: #5e72e4; background: #f4f5f7; padding: 4px 8px; border-radius: 6px; font-weight: 700;"><?= h($producto['Producto']['clave']) ?></code></td>
+                                            <td style="font-weight: 700; color: #495057;"><?= h($producto['Producto']['marca']) ?></td>
+                                            <td style="font-weight: 800; color: #212529;"><?= h($producto['Producto']['nombre_producto']) ?></td>
+                                            <td><code style="color: #007bff; background: #f8f9fa; padding: 4px 8px; border-radius: 6px; font-weight: 700;"><?= h($producto['Producto']['clave']) ?></code></td>
                                             <td>
                                                 <span class="badge-kosher">
                                                     <?= isset($certificados_tipos[$producto['Producto']['clasificacion']]) ? h($certificados_tipos[$producto['Producto']['clasificacion']]) : 'N/A' ?>
                                                 </span>
                                             </td>
-                                            <td style="color: #67748e; font-weight: 600; font-size: 0.85rem;">
+                                            <td style="color: #6c757d; font-weight: 600; font-size: 0.85rem;">
                                                 <i class="fa fa-phone mr-1 opacity-5"></i> <?= !empty($producto['Empresa']['telefono']) ? h($producto['Empresa']['telefono']) : 'N/A' ?>
                                             </td>
                                             <td style="font-size: 0.85rem;">
@@ -148,11 +148,11 @@ $certificados_tipos = array(
                                                     }
                                                 ?>
                                                 <i class="fa fa-envelope-o mr-1 opacity-5"></i> 
-                                                <?= $email != 'N/A' ? $this->Html->link($email, 'mailto:' . $email, array('style' => 'color: #5e72e4; font-weight: 600;')) : 'N/A' ?>
+                                                <?= $email != 'N/A' ? $this->Html->link($email, 'mailto:' . $email, array('style' => 'color: #007bff; font-weight: 600;')) : 'N/A' ?>
                                             </td>
                                             <td style="font-size: 0.85rem;">
                                                 <i class="fa fa-globe mr-1 opacity-5"></i> 
-                                                <?= !empty($producto['Empresa']['pagina_Web']) ? $this->Html->link('Visitar', $producto['Empresa']['pagina_Web'], array('target' => '_blank', 'style' => 'color: #5e72e4; font-weight: 600;')) : 'N/A' ?>
+                                                <?= !empty($producto['Empresa']['pagina_Web']) ? $this->Html->link('Visitar', $producto['Empresa']['pagina_Web'], array('target' => '_blank', 'style' => 'color: #007bff; font-weight: 600;')) : 'N/A' ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

@@ -22,6 +22,12 @@
                         <h3 class="m-0" style="font-weight: 800; color: #2c3e50; letter-spacing: -0.5px;">
                             <i class="fa fa-flask text-primary mr-2"></i> Mis Materias Primas
                         </h3>
+                        <div>
+                            <?= $this->Html->link('<i class="fa fa-download mr-1"></i> Descargar Plantilla CSV', '/files/plantilla_mps.csv', array('escape' => false, 'class' => 'btn btn-outline-info shadow-sm mr-2', 'style' => 'border-radius: 8px; font-weight: 600;', 'target' => '_blank', 'download' => 'plantilla_mps.csv')) ?>
+                            <button type="button" class="btn btn-primary shadow-sm" style="border-radius: 8px; font-weight: 600;" onclick="$('#modalImportarCSV').modal('show')">
+                                <i class="fa fa-upload mr-1"></i> Importar CSV
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive p-4">
@@ -32,7 +38,8 @@
                                         <th class="border-0">Nombre</th>
                                         <th class="border-0">Marca</th>
                                         <th class="border-0">Fabricantes / Proveedores</th>
-                                        <th class="border-0 text-center">Actualizar</th>
+                                        <th class="border-0 text-center">Estatus</th>
+                                        <th class="border-0 text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody style="font-size: 14px;">
@@ -104,25 +111,28 @@
                                                 <span class="text-muted small font-italic">Sin fabricantes asignados</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center align-middle">
                                             <?php if (isset($pendientes[$mp['Mp']['id']])): ?>
                                                 <span class="badge bg-soft-info text-info" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 5px; background-color: #e3f2fd;">EN TRÁMITE</span>
                                             <?php elseif ($is_expired): ?>
-                                                <button type="button" class="btn btn-sm btn-warning shadow-sm update-btn" 
-                                                        data-id="<?= $mp['Mp']['id'] ?>" 
-                                                        data-nombre="<?= h($mp['Mp']['nombre_ingrediente']) ?>"
-                                                        data-clave="<?= h($mp['Mp']['clave']) ?>"
-                                                        data-marca="<?= h($mp['Mp']['marca_comercial']) ?>"
-                                                        data-clasificacion="<?= isset($mp['Mp']['clasificacion']) ? h($mp['Mp']['clasificacion']) : '' ?>"
-                                                        data-fabricante='<?= isset($mp['MpFabricante']) ? json_encode($mp['MpFabricante']) : "[]" ?>'
-                                                        data-kosher="<?= isset($mp['Mp']['clasificacion_kosher']) ? h($mp['Mp']['clasificacion_kosher']) : '' ?>"
-                                                        data-notas="<?= h($mp['Mp']['notas']) ?>"
-                                                        style="border-radius: 8px; font-weight: 700; font-size: 0.75rem; color: #fff; padding: 6px 15px;">
-                                                    <i class="fa fa-upload mr-1"></i> Actualizar
-                                                </button>
+                                                <span class="badge bg-soft-warning text-warning" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 5px; background-color: #fff3cd;">VENCIDO</span>
                                             <?php else: ?>
                                                 <span class="badge bg-soft-success text-success" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 5px;">VIGENTE</span>
                                             <?php endif; ?>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <button type="button" class="btn btn-sm <?= $is_expired ? 'btn-warning' : 'btn-outline-primary' ?> shadow-sm update-btn" 
+                                                    data-id="<?= $mp['Mp']['id'] ?>" 
+                                                    data-nombre="<?= h($mp['Mp']['nombre_ingrediente']) ?>"
+                                                    data-clave="<?= h($mp['Mp']['clave']) ?>"
+                                                    data-marca="<?= h($mp['Mp']['marca_comercial']) ?>"
+                                                    data-clasificacion="<?= isset($mp['Mp']['clasificacion']) ? htmlspecialchars($mp['Mp']['clasificacion'], ENT_QUOTES, 'UTF-8') : '' ?>"
+                                                    data-fabricante="<?= isset($mp['MpFabricante']) ? htmlspecialchars(json_encode($mp['MpFabricante']), ENT_QUOTES, 'UTF-8') : "[]" ?>"
+                                                    data-kosher="<?= isset($mp['Mp']['clasificacion_kosher']) ? htmlspecialchars($mp['Mp']['clasificacion_kosher'], ENT_QUOTES, 'UTF-8') : '' ?>"
+                                                    data-notas="<?= htmlspecialchars($mp['Mp']['notas'], ENT_QUOTES, 'UTF-8') ?>"
+                                                    style="border-radius: 8px; font-weight: 700; font-size: 0.75rem; padding: 6px 15px;">
+                                                <i class="fa fa-<?= $is_expired ? 'exclamation-triangle' : 'edit' ?> mr-1"></i> Actualizar
+                                            </button>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -210,6 +220,41 @@
     </div>
 </div>
 
+<!-- Modal Importar CSV -->
+<div class="modal fade" id="modalImportarCSV" tabindex="-1" role="dialog" aria-labelledby="modalImportarCSVLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header bg-light" style="border-radius: 15px 15px 0 0; padding: 20px 25px;">
+                <h5 class="modal-title" id="modalImportarCSVLabel" style="font-weight: 800; color: #2c3e50;">
+                    <i class="fa fa-upload text-primary mr-2"></i> Importar Materias Primas
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <?= $this->Form->create('Mp', array('url' => array('controller' => 'PortalEmpresas', 'action' => 'importar_mps'), 'type' => 'file')) ?>
+            <div class="modal-body p-4">
+                <div class="alert alert-info text-sm mb-4" style="border-radius: 10px; background-color: #f8f9fe; border-color: #e9ecef; color: #32325d;">
+                    <i class="fa fa-info-circle mr-2"></i> Por favor seleccione el archivo CSV que descargó y llenó previamente. Recuerde que la <strong>Clave</strong> es opcional, pero si la proporciona y ya existe en sus materias primas registradas, la fila será ignorada para no crear duplicados.
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label class="text-muted text-uppercase small font-weight-bold">Archivo CSV *</label>
+                    <div class="custom-file">
+                        <input type="file" name="data[Mp][csv_file]" class="custom-file-input custom-file-csv" id="customFileCSV" accept=".csv" required>
+                        <label class="custom-file-label border-light shadow-none bg-light" for="customFileCSV" style="border-radius: 10px; height: 40px; line-height: 28px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Elegir archivo CSV...</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light" style="border-radius: 0 0 15px 15px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 8px; font-weight: 600;">Cancelar</button>
+                <button type="submit" class="btn btn-primary shadow" style="border-radius: 8px; font-weight: 600;"><i class="fa fa-paper-plane mr-1"></i> Importar Archivo</button>
+            </div>
+            <?= $this->Form->end() ?>
+        </div>
+    </div>
+</div>
+
 <?php
 echo $this->Html->script(
 	array(
@@ -259,6 +304,7 @@ $(document).ready(function() {
         var proveedorVal = data && data.proveedor ? data.proveedor : '';
         var paginaProductoVal = data && data.pagina_producto ? data.pagina_producto : '';
         var expiracionVal = data && data.expiracion_certificado && data.expiracion_certificado != '0000-00-00' ? data.expiracion_certificado : '';
+        var certificadoVal = data && data.certificado ? data.certificado : '';
         
         // Convert Y-m-d to d-m-Y if needed for datepicker
         if (expiracionVal && expiracionVal.indexOf('-') === 4) {
@@ -266,9 +312,19 @@ $(document).ready(function() {
             expiracionVal = parts[2] + '-' + parts[1] + '-' + parts[0];
         }
 
+        var isEdit = (data && data.fabricante) ? true : false;
+        var reqAttr = isEdit ? '' : 'required';
+        var reqLabel = isEdit ? '(Opcional)' : '*';
+        
+        var certLink = '';
+        if (certificadoVal) {
+            certLink = `<a href="${certificadoVal}" target="_blank" class="ml-2 badge badge-info" style="font-size: 0.75rem; text-transform: none;"><i class="fa fa-external-link"></i> Ver actual</a>`;
+        }
+
         var html = `
             <div class="fabricante-item p-3 mb-3 border bg-white" style="border-radius: 12px; position: relative;">
                 <button type="button" class="btn btn-sm btn-danger remove-fabricante-btn" style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; padding: 0; line-height: 28px;"><i class="fa fa-times"></i></button>
+                <input type="hidden" name="data[MpFabricante][${index}][certificado_actual]" value="${certificadoVal}">
                 
                 <div class="row pr-4">
                     <div class="col-md-5 form-group mb-3">
@@ -287,13 +343,13 @@ $(document).ready(function() {
                 
                 <div class="row">
                     <div class="col-md-6 form-group mb-0">
-                        <label class="text-muted text-uppercase small font-weight-bold">Nueva Fecha Expiración *</label>
-                        <input type="text" name="data[MpFabricante][${index}][expiracion_certificado]" class="form-control border-light shadow-none bg-light datepicker-fabricante" style="border-radius: 10px; height: 40px;" placeholder="dd-mm-yyyy" required>
+                        <label class="text-muted text-uppercase small font-weight-bold">Nueva Fecha Expiración ${reqLabel}</label>
+                        <input type="text" name="data[MpFabricante][${index}][expiracion_certificado]" class="form-control border-light shadow-none bg-light datepicker-fabricante" style="border-radius: 10px; height: 40px;" placeholder="dd-mm-yyyy" ${reqAttr}>
                     </div>
                     <div class="col-md-6 form-group mb-0">
-                        <label class="text-muted text-uppercase small font-weight-bold">Nuevo Certificado (PDF) *</label>
+                        <label class="text-muted text-uppercase small font-weight-bold">Nuevo Certificado (PDF) ${reqLabel} ${certLink}</label>
                         <div class="custom-file">
-                            <input type="file" name="data[MpFabricante][${index}][file]" class="custom-file-input cert-file-input" id="customFile_${index}" required>
+                            <input type="file" name="data[MpFabricante][${index}][file]" class="custom-file-input cert-file-input" id="customFile_${index}" ${reqAttr}>
                             <label class="custom-file-label border-light shadow-none bg-light" for="customFile_${index}" style="border-radius: 10px; height: 40px; line-height: 28px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Elegir archivo...</label>
                         </div>
                     </div>
@@ -330,7 +386,7 @@ $(document).ready(function() {
         $(this).closest('.fabricante-item').remove();
     });
 
-    $('.update-btn').on('click', function() {
+    $(document).on('click', '.update-btn', function() {
         var id = $(this).data('id');
         var nombre = $(this).data('nombre');
         var clave = $(this).data('clave');
@@ -362,9 +418,18 @@ $(document).ready(function() {
         $('#updateModal').modal('show');
     });
 
-    $(".custom-file-input").on("change", function() {
+    $(".custom-file-input:not(.custom-file-csv)").on("change", function() {
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    $(".custom-file-csv").on("change", function() {
+        var fileName = $(this).val().split("\\").pop();
+        if(fileName) {
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        } else {
+            $(this).siblings(".custom-file-label").removeClass("selected").html("Elegir archivo CSV...");
+        }
     });
 });
 </script>

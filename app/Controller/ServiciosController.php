@@ -209,29 +209,6 @@ class ServiciosController extends AppController
 		$tipos_eventos = array(
 			0 => array(
 				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS HASTA 150 EN ADELANTE',
-<<<<<<< Updated upstream
-				'precio' => 11600.00
-			),
-			1 => array(
-				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS HASTA 100 A 150 PERSONAS',
-				'precio' => 9860.00
-			),
-			2 => array(
-				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS DE 50 A 100 PERSONAS',
-				'precio' => 6960.00
-			),
-			3 => array(
-				'name' => 'CUALQUIER EVENTO DE BANQUETERO HASTA 8 HRS DE 0 A 50 PERSONAS',
-				'precio' => 4060.00
-			),
-			4 => array(
-				'name' => 'CUALQUIER EVENTO DE BANQUETERO HRA EXTRA DESPUÉS DE LAS 8 HRS',
-				'precio' => 600.00
-			),
-			5 => array(
-				'name' => 'EVENTO EN SHABAT PAGO ÚNICO',
-				'precio' => 5000.00
-=======
 				'precio' => 11600.00,
 				'visibilidad' => 'establecimientos'
 			),
@@ -259,7 +236,6 @@ class ServiciosController extends AppController
 				'name' => 'EVENTO EN SHABAT PAGO ÚNICO',
 				'precio' => 5000.00,
 				'visibilidad' => 'establecimientos'
->>>>>>> Stashed changes
 			),
 			10 => array(
 				'name' => 'EVENTO HASTA 25 PERSONAS',
